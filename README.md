@@ -1,16 +1,16 @@
 # Chasm Language windows c-based interpreter.
 A sort of OOASM (object-oriented assembly) intented for a future OS kernel.
 ## Command list
-### int 'name'
-Creates and integer, sets it to 0 automatically.
-### add 'name' 'value'
+### int 'name' 'value'
+Creates and integer, sets it to 0 automatically if the value isn't given.
+### inc 'name' 'value'
 Adds a static value to an integer.
-### !add 'name' 'name2'
+### add 'name' 'name2'
 Adds an integer to the first integer.
 ### intout 'name' 'format'
 Prints the integer, if 'format' is a '!' prints a new line after it.
-### intcmp 'name' 'value'
-Compares and integer to a static value, results in 0 if equal, 1 if greater or -1 if smaller (than given value).
+### intcmp 'value' 'value2'
+Compares two values. Result is stored in program. Takes in two values so use ! for integers.
 ### intptr 'name' 'name2'
 Puts the in-language pointer to the second integer into the first one.
 ### str 'name'
@@ -31,11 +31,11 @@ Jumps to a previously created label.
 Jumps if the previous comparison resulted in 0.
 ### jee
 Exits if the previous comparison resulted in 0.
-### .'text'
-Prints the text.
-### !'text'
-Adds the text after the exclemation mark to the next defined string. (Currently broken!)
+### 'out' 
+Prints the text after it, useful with !.
 ### 'lnout'
 Prints a new line.
+### 'command' !'argument'
+This is useful for functions like inc or out, it converts the name of the function into its value -> **inc a !b** will work the same as **add a b**.
 ### end
 Quits the program
