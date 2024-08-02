@@ -7,7 +7,7 @@
 
 
 
-const char* code = "int a 1\nintout a\ninc a 10\nintout a\ndec a 5\nintout a\nend";
+const char* code = "int a 1\nint b 2\nintout a\nlnout\ninc a !b\nintout a\nend";
 const char* allowedChars = "abcdefghijklmnoprstquvwxyzABCDEFGHIJKLMNOPRSTQUVWXYZ./!1234567890+-?";
 
 int enumerate_lines(const char* text) {
@@ -114,6 +114,15 @@ char** argumentize_line(char* line) {
     return buffer;
 }
 
+char *itoa(long n)
+{
+    int len = n==0 ? 1 : floor(log10l(labs(n)))+1;
+    if (n<0) len++; // room for negative sign '-'
+
+    char    *buf = calloc(sizeof(char), len+1); // +1 for null
+    snprintf(buf, len+1, "%ld", n);
+    return   buf;
+}
 
 /*
     char* teststring = "abc cdf";
@@ -134,6 +143,7 @@ int main() {
     struct Node* jmp_head = NULL;
     int lines = enumerate_lines(code);
     int line = 1;
+    int eargs = 0;
 
     printf("LINES: %d, running...\n", lines);
 
@@ -143,6 +153,20 @@ int main() {
         char* line_str = get_line(line, code);
         //printf("LINE: %s... ", line_str);
         char** args = argumentize_line(line_str);
+        int eargs = enumerate_arguments(line_str);
+        for (int e = 0; e < eargs; e++) {
+            if (args[e][0] == '!') {
+                for (int f = 0; f < strlen(args[e]); f++) {
+                    args[e][f] = args[e][f+1];
+                }
+                struct Node* tempnode = getNodeByName(int_head, args[e]);
+                memset(args[e], '\0', strlen(args[e]));
+                strcpy(args[e], itoa(tempnode->value));
+            }
+        }
+
+
+
         if (strcmp(args[0], "int") == 0) {
             int n = 0;
             if (args[2] != NULL) {
@@ -167,7 +191,15 @@ int main() {
             printf("Ending..");
             break;
         } else if (strcmp(args[0], "renint") == 0) {
-            updateNodeByName(int_head, args[1], args[2], NULL);
+            //updateNodeByName(int_head, args[1], args[2], NULL);
+        } else if (strcmp(args[0], "add") == 0) {
+            struct Node* tempnode = getNodeByName(int_head, args[2]);
+            struct Node* tempnode2 = getNodeByName(int_head, args[1]);
+            if (tempnode != NULL) {
+                updateNodeByName(int_head, args[1], NULL, tempnode->value + tempnode2->value);
+            }
+        } else if (strcmp(args[0], "lnout") == 0) {
+            printf("\n");
         }
         line++;
 
