@@ -1,0 +1,12 @@
+
+int a
+label nigga
+	add a 1
+	ret
+intset a 0
+label loop
+	do nigga
+	intcmp a 4
+	intout a !
+	jee
+	jump loop
