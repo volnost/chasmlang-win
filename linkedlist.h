@@ -77,9 +77,7 @@ int updateNodeByName(struct Node* head, const char* name, const char* newName, i
                 strncpy(current->name, newName, 31);
                 current->name[31] = '\0';  
             }
-            if(newValue!=NULL) {
-                current->value = newValue;
-            }
+            current->value = newValue;
             return 1; 
         }
         current = current->next;

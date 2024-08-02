@@ -7,7 +7,19 @@
 
 
 
-const char* code = "int a 1\nint b 2\nintout a\nlnout\ninc a !b\nintout a\nend";
+const char* code = "int a 1\n"
+    "int b 30\n"
+    "out Numbers from !a to !b\n"
+    "label thingy\n"
+    "inc a 1\n"
+    "lnout\n"
+    "out !a\n"
+    "ret\n"
+    "label loop\n"
+    "do thingy\n"
+    "intcmp !a !b\n"
+    "jee\n"
+    "jump loop\n";
 const char* allowedChars = "abcdefghijklmnoprstquvwxyzABCDEFGHIJKLMNOPRSTQUVWXYZ./!1234567890+-?";
 
 int enumerate_lines(const char* text) {
@@ -144,8 +156,11 @@ int main() {
     int lines = enumerate_lines(code);
     int line = 1;
     int eargs = 0;
+    int running_do = 0;
+    int savedline = 0;
+    int res = 2;
 
-    printf("LINES: %d, running...\n", lines);
+    printf("[ChasmLang] LINES: %d, running...\n", lines);
 
 
     //RUNNING
@@ -200,6 +215,38 @@ int main() {
             }
         } else if (strcmp(args[0], "lnout") == 0) {
             printf("\n");
+        } else if (strcmp(args[0], "out") == 0) {
+            for (int e = 1; e < eargs; e++) {
+                printf("%s ", args[e]);
+            }
+        } else if (strcmp(args[0], "label") == 0) {
+            append(&jmp_head, args[1], line);
+        } else if (strcmp(args[0], "jump") == 0) {
+            struct Node* tempnode = getNodeByName(jmp_head, args[1]);
+            if (tempnode != NULL) {
+                line = tempnode->value;
+            }
+        } else if (strcmp(args[0], "do") == 0) {
+            running_do = 1;
+            savedline = line;
+            struct Node* tempnode = getNodeByName(jmp_head, args[1]);
+            if (tempnode != NULL) {
+                line = tempnode->value;
+            }
+        } else if (strcmp(args[0], "ret") == 0){
+            if (running_do) {
+                running_do = !running_do;
+                line = savedline;
+            }
+        } else if (strcmp(args[0], "intcmp") == 0) {
+            int i = atoi(args[1]);
+            int j = atoi(args[2]);
+            res = i - j;
+            //printf("|ABS RES: %d| %s, %s|", res, args[1], args[2]);
+        } else if (strcmp(args[0], "jee") == 0 ){
+            if (res == 0) {
+                break;
+            }
         }
         line++;
 
@@ -207,11 +254,16 @@ int main() {
         free(args);
         //printf("\n");
     }
-
+    printf("\nPROGRAM FINISHED. Cleaning up memory.");
     //POST-RUN CLEANUP
     while (int_head != NULL) {
         struct Node* temp = int_head;
         int_head = int_head->next;
+        free(temp);
+    }
+    while (jmp_head != NULL) {
+        struct Node* temp = jmp_head;
+        jmp_head = jmp_head->next;
         free(temp);
     }
 }
