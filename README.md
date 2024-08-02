@@ -1,4 +1,4 @@
-# Chasm Language windows c-based interpreter.
+# Chasm Language Windows c-based interpreter.
 A sort of OOASM (object-oriented assembly) intented for a future OS kernel.
 ## Command list
 ### int 'name' 'value'
